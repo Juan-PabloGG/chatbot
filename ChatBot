@@ -1,0 +1,51 @@
+import os
+
+# Función para cargar las respuestas previas desde el archivo
+def cargar_respuestas(nombre_archivo):
+    respuestas = {}
+    if os.path.exists(nombre_archivo):
+        with open(nombre_archivo, 'r') as file:
+            for line in file:
+                pregunta, respuesta = line.strip().split(':')
+                respuestas[pregunta] = respuesta
+    return respuestas
+
+# Función para guardar las respuestas en el archivo
+def guardar_respuestas(nombre_archivo, respuestas):
+    with open(nombre_archivo, 'w') as file:
+        for pregunta, respuesta in respuestas.items():
+            file.write(f"{pregunta}:{respuesta}\n")
+
+# Preguntas predeterminadas del chatbot
+preguntas_predeterminadas = {
+    "¿Cómo estás?": "Estoy bien, gracias por preguntar.",
+    "¿Cuál es tu nombre?": "Me llamo ChatBot.",
+    "¿Qué hora es?": "Lo siento, no tengo la capacidad de decir la hora."
+}
+
+# Función principal del chatbot
+def chatbot():
+    nombre_archivo = "respuestas_usuario.txt"
+    respuestas_usuario = cargar_respuestas(nombre_archivo)
+    
+    print("¡Hola! Soy un chatbot. Puedes preguntarme lo que quieras o escribir 'salir' para terminar la conversación.")
+    
+    while True:
+        pregunta = input("Tú: ").lower()
+        
+        if pregunta == 'salir':
+            guardar_respuestas(nombre_archivo, respuestas_usuario)
+            print("¡Hasta luego!")
+            break
+        
+        if pregunta in preguntas_predeterminadas:
+            print("ChatBot:", preguntas_predeterminadas[pregunta])
+        elif pregunta in respuestas_usuario:
+            print("ChatBot:", respuestas_usuario[pregunta])
+        else:
+            respuesta = input("ChatBot: No sé la respuesta a esa pregunta. ¿Qué debería responder? ")
+            respuestas_usuario[pregunta] = respuesta
+
+# Llamada a la función principal del chatbot
+if __name__ == "__main__":
+    chatbot()
