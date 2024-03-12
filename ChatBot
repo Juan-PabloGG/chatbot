@@ -1,6 +1,17 @@
 import os
 
-# Función para cargar las respuestas previas desde el archivo
+class BaseConocimiento:
+    def __init__(self):
+        self.conocimiento = {
+            "Hola": "¡Hola! ¿Cómo estás?",
+            "¿Cómo estás?": "Estoy bien, gracias por preguntar.",
+            "¿Cuál es tu nombre?": "Me llamo ChatBot.",
+            "¿Qué hora es?": "Lo siento, no tengo la capacidad de decir la hora."
+        }
+
+    def obtener_respuesta(self, pregunta):
+        return self.conocimiento.get(pregunta, "Lo siento, no entiendo.")
+
 def cargar_respuestas(nombre_archivo):
     respuestas = {}
     if os.path.exists(nombre_archivo):
@@ -10,42 +21,32 @@ def cargar_respuestas(nombre_archivo):
                 respuestas[pregunta] = respuesta
     return respuestas
 
-# Función para guardar las respuestas en el archivo
 def guardar_respuestas(nombre_archivo, respuestas):
     with open(nombre_archivo, 'w') as file:
         for pregunta, respuesta in respuestas.items():
             file.write(f"{pregunta}:{respuesta}\n")
 
-# Preguntas predeterminadas del chatbot
-preguntas_predeterminadas = {
-    "¿Cómo estás?": "Estoy bien, gracias por preguntar.",
-    "¿Cuál es tu nombre?": "Me llamo ChatBot.",
-    "¿Qué hora es?": "Lo siento, no tengo la capacidad de decir la hora."
-}
-
-# Función principal del chatbot
-def chatbot():
+def chat():
+    base = BaseConocimiento()
     nombre_archivo = "respuestas_usuario.txt"
     respuestas_usuario = cargar_respuestas(nombre_archivo)
     
-    print("¡Hola! Soy un chatbot. Puedes preguntarme lo que quieras o escribir 'salir' para terminar la conversación.")
-    
+    print("¡Bienvenido al chatbot! Puedes escribir 'Salir' en cualquier momento para terminar.")
     while True:
-        pregunta = input("Tú: ").lower()
-        
-        if pregunta == 'salir':
+        entrada = input("Tú: ")
+        if entrada.lower() == 'salir':
             guardar_respuestas(nombre_archivo, respuestas_usuario)
             print("¡Hasta luego!")
             break
-        
-        if pregunta in preguntas_predeterminadas:
-            print("ChatBot:", preguntas_predeterminadas[pregunta])
-        elif pregunta in respuestas_usuario:
-            print("ChatBot:", respuestas_usuario[pregunta])
+        elif entrada in respuestas_usuario:
+            print("Bot:", respuestas_usuario[entrada])
         else:
-            respuesta = input("ChatBot: No sé la respuesta a esa pregunta. ¿Qué debería responder? ")
-            respuestas_usuario[pregunta] = respuesta
+            respuesta = base.obtener_respuesta(entrada)
+            if respuesta != "Lo siento, no entiendo.":
+                print("Bot:", respuesta)
+            else:
+                respuesta_nueva = input("Bot: No sé la respuesta a esa pregunta. ¿Qué debería responder? ")
+                respuestas_usuario[entrada] = respuesta_nueva
 
-# Llamada a la función principal del chatbot
 if __name__ == "__main__":
-    chatbot()
+    chat()
